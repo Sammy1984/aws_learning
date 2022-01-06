@@ -1,0 +1,10 @@
+[Unit]
+Description=assume_role.sh service
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/local/bin/assume_role.sh
+
+[Install]
+WantedBy=multi-user.target
