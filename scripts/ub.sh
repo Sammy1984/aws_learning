@@ -64,16 +64,13 @@ chown -R tutor-a:tutor-a /home/tutor-a/
 sed -i '/%sudo/d' /etc/sudoers
 echo "%sudo   ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-aws configure set default.region eu-central-1
-
-
-
 echo "!!!!!!!!set hostname!!!!!!!!"
 
 echo "preserve_hostname: true" >> /etc/cloud/cloud.cfg
+region="$(aws configure list | grep region | awk '{print $2}')" 
 account_id="$(aws sts get-caller-identity --query Account --output text)"
 instance_id="$(curl http://169.254.169.254/latest/meta-data/instance-id)"
-my_hostname="$(aws ec2 describe-instances --instance-ids ${instance_id} --query "Reservations[].Instances[].[Tags[?Key==\`Name\`].Value | [0]    ]" --output text)"
+my_hostname="$(aws ec2 describe-instances --region ${region} --instance-ids ${instance_id} --query "Reservations[].Instances[].[Tags[?Key==\`Name\`].Value | [0]    ]" --output text)"
 
 
 hostnamectl set-hostname ${my_hostname}"."${account_id}".cirruscloud.click"

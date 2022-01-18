@@ -71,7 +71,6 @@ firewall-cmd --reload
 #USER
 
 systemctl reload nginx
-aws configure set default.region eu-central-1
 
 useradd -m -G wheel -s /bin/bash tutor-a
 mkdir -p /home/tutor-a/.ssh
@@ -81,15 +80,13 @@ chown -R tutor-a:tutor-a /home/tutor-a/.ssh/authorized_keys
 sed -i '/%wheel/d' /etc/sudoers
 echo "%wheel   ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-aws configure set default.region eu-central-1
-
-
 echo "!!!!!!!!set hostname!!!!!!!!" 
 
 echo "preserve_hostname: true" >> /etc/cloud/cloud.cfg
+region="$(aws configure list | grep region | awk '{print $2}')"
 account_id="$(aws sts get-caller-identity --query Account --output text)"
 instance_id="$(curl http://169.254.169.254/latest/meta-data/instance-id)"
-my_hostname="$(aws ec2 describe-instances --instance-ids ${instance_id} \
+my_hostname="$(aws ec2 describe-instances --region ${region} --instance-ids ${instance_id} \
 	--query "Reservations[].Instances[].[Tags[?Key==\`Name\`].Value | [0]]" --output text)"
 
 
@@ -104,8 +101,8 @@ echo "MC4wLjAuMAAAAAAAAAAAAAUAoyVMMkpBaAAAAAEBAQBldGgwAAAAAAAAAAAAAAAAZFhObGNtNW
 
 sysremctl enable noip.service
 systemctl restart noip.service
-comments
 
+comments
 
 systemctl daemon-reload
 sudo systemctl enable assume_role.service

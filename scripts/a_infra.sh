@@ -1,7 +1,5 @@
 #/!bin/bash
 
-# aws ec2 describe-vpcs --region us-west-2 
-
 for reg in $(cat region.conf)
 do
 	echo '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
